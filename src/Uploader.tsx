@@ -72,26 +72,6 @@ const Component = (props: Props) => {
     window.addEventListener('dragleave', hideUploader)
   })
 
-  // React.useEffect(() => {
-  //   if (props.map && !simpleStyle) {
-  //     const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: sourceId}).addTo(props.map).fitBounds()
-  //     setSimpleStyle(simpleStyle)
-
-  //     if (window.location.search && simpleStyle) {
-  //       const query = queryString.parse(window.location.search)
-  //       if (query.data) {
-  //         // @ts-ignore
-  //         fetch(query.data)
-  //           .then((response) => response.text())
-  //           .then((data) => {
-  //             const geojson = xml2geojson(data)
-  //             simpleStyle.updateData(geojson).fitBounds()
-  //           });
-  //       }
-  //     }
-  //   }
-  // }, [props.map, simpleStyle])
-
   const onDrop = React.useCallback((acceptedFiles : any) => {
     if (! props.map) {
       return
@@ -99,7 +79,6 @@ const Component = (props: Props) => {
 
     acceptedFiles.forEach((file: any) => {
       const reader = new FileReader()
-      console.log(file)
 
       reader.onabort = () => () => {}
       reader.onerror = () => console.log('file reading has failed')
