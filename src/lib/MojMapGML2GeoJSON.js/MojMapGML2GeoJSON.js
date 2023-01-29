@@ -106,7 +106,7 @@ class MojMapGML2GeoJSON {
 	static getProperties(ft) {
 		var ans = {};
 		for (var key in ft) {
-			if (key != "形状") {
+			if (key !== "形状") {
 				ans[key] = ft[key];
 			}
 		}
@@ -132,9 +132,9 @@ class MojMapGML2GeoJSON {
 
 		crds = MojMapGML2GeoJSON.sumupEndStart(crds);
 
-		if (gtype == "Point") {
+		if (gtype === "Point") {
 			crds = crds[0];
-		} else if (gtype == "Polygon") {
+		} else if (gtype === "Polygon") {
 			crds = [crds];
 		}
 
@@ -148,7 +148,7 @@ class MojMapGML2GeoJSON {
 		var ans = [];
 		var prevp = null;
 		for (var p of crds) {
-			if (prevp && prevp[0] == p[0] && prevp[1] == p[1]) {
+			if (prevp && prevp[0] === p[0] && prevp[1] === p[1]) {
 			} else {
 				ans.push(p);
 			}
@@ -188,8 +188,8 @@ class MojMapGML2GeoJSON {
 			return [[x, y]];
 		} else {
 			for (var key in obj) {
-				if (typeof obj[key] == "object") {
-					if (key == "content" && obj["idref"] && pids[obj["idref"]]) {
+				if (typeof obj[key] === "object") {
+					if (key === "content" && obj["idref"] && pids[obj["idref"]]) {
 						// 循環参照　Skip
 					} else {
 						var crd = MojMapGML2GeoJSON.getCoordinates(obj[key], kei, pids);
@@ -217,9 +217,9 @@ class MojMapGML2GeoJSON {
 		if (attrs.length > 0) {
 			for (var attr of attrs) {
 				thisObj[attr.name] = attr.value;
-				if (idTable && attr.name == "id") {
+				if (idTable && attr.name === "id") {
 					idTable[attr.value] = thisObj;
-				} else if (refTable && attr.name == "idref") {
+				} else if (refTable && attr.name === "idref") {
 					if (!refTable[attr.value]) {
 						refTable[attr.value] = [];
 					}
@@ -248,8 +248,8 @@ class MojMapGML2GeoJSON {
 		} else {
 			// 子要素がない場合
 			var textContent = elm.textContent;
-			if (textContent != "") {
-				if (attrs.length == 0) {
+			if (textContent !== "") {
+				if (attrs.length === 0) {
 					// 子要素も、属性もないので、textだけ
 					thisObj = elm.textContent;
 				} else {

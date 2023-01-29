@@ -86,9 +86,8 @@ class XY2BL {
 		var s_a, s_f, s_e, s_e_;
 		var s_M;
 		var ans = {};
-		var i;
 
-		if (crs && crs == XY2BL.TOKYO_BESSEL) {
+		if (crs && crs === XY2BL.TOKYO_BESSEL) {
 			s_a = XY2BL.a_BL;
 			s_f = XY2BL.f_BL;
 		} else {
