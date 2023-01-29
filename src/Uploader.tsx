@@ -1,14 +1,11 @@
 import React from 'react'
 
 import {useDropzone} from 'react-dropzone'
-import queryString from "query-string"
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons"
 
 import { xml2geojson } from "./lib/xml2geojson"
-
-const sourceId = 'custom-geojson'
 
 const baseStyle = {
   flex: 1,
@@ -65,7 +62,6 @@ const geojson = {
 } as GeoJSON.FeatureCollection
 
 const Component = (props: Props) => {
-  const [simpleStyle, setSimpleStyle] = React.useState()
 
   React.useEffect(() => {
     window.addEventListener('dragenter', showUploader)
@@ -97,11 +93,6 @@ const Component = (props: Props) => {
 
         props.dataCallback(geojson)
 
-        // if (simpleStyle) {
-        //   // @ts-ignore
-        //   simpleStyle.updateData(geojson).fitBounds()
-        // }
-
         const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: file.name}).addTo(props.map).fitBounds()
         simpleStyle.updateData(geojson).fitBounds()
       }
@@ -109,7 +100,7 @@ const Component = (props: Props) => {
       reader.readAsText(file)
     })
 
-  }, [props, simpleStyle])
+  }, [props])
 
   const {
     getRootProps,
