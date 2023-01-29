@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"></meta>
+<title>法務省　登記所備付地図データのGeoJSONコンバータ</title>
+</head>
+
+<script type="module">
+// 法務省　登記所備付地図データコンバータライブラリ
+import { MojMapGML2GeoJSON } from "./MojMapGML2GeoJSON.js";
+
+// ZIPファイルの読み込みライブラリ(optional)
+import { ZipDataDownloader } from "./ZipDataDownloader.js";
+
+window.onload = async function () {
+	// zip圧縮されたデータを読み込むケース
+	var uzd = await ZipDataDownloader.download("testdata/13102-0100-28.zip");
+	var r = uzd[0].content;
+	// 圧縮されてないxmlを読み込むケース
+	// var r = await (await fetch("testdata/13101-0100-28.xml")).text(); 
+	
+	var xml = new DOMParser().parseFromString(r, "text/xml");
+
+	var geojs = MojMapGML2GeoJSON.convert(xml);
+	console.log(geojs);
+	window.jsonSrc.innerText = JSON.stringify(geojs, null, "\t");
+};
+</script>
+
+<body>
+<h3>法務省登記所備付地図データのGeoJSONコンバータライブラリ サンプル</h3>
+<div><code><pre  id="jsonSrc"></pre></code></div>
+</body>
+</html>

@@ -6,7 +6,7 @@ import queryString from "query-string"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons"
 
-import { csv2geojson } from "./lib/csv2geojson"
+import { xml2geojson } from "./lib/xml2geojson"
 
 const sourceId = 'custom-geojson'
 
@@ -84,7 +84,7 @@ const Component = (props: Props) => {
           fetch(query.data)
             .then((response) => response.text())
             .then((data) => {
-              const geojson = csv2geojson(data)
+              const geojson = xml2geojson(data)
               simpleStyle.updateData(geojson).fitBounds()
             });
         }
@@ -108,7 +108,7 @@ const Component = (props: Props) => {
         try {
           geojson.features = JSON.parse(data).features
         } catch(e) {
-          const _geojson = csv2geojson(data)
+          const _geojson = xml2geojson(data)
           geojson.features = _geojson.features
         }
 
@@ -135,9 +135,9 @@ const Component = (props: Props) => {
     isDragAccept,
     isDragReject
   } = useDropzone({ accept: {
-    'application/json': ['.json', '.geojson'],
-    'text/plain': ['.csv', '.txt'],
-  }, onDrop, maxFiles: 1, });
+    'application/octet-stream': ['.zip'],
+    'text/plain': ['.xml'],
+  }, onDrop, maxFiles: 100, });
 
   const style = React.useMemo(() => ({
     ...baseStyle,
@@ -156,8 +156,7 @@ const Component = (props: Props) => {
         <input {...getInputProps()} />
         <div>
           <p style={{ fontSize: '144px', margin: 0, lineHeight: '144px' }}><FontAwesomeIcon icon={ faCloudArrowUp } /></p>
-          <p>CSV または GeoJSON フォーマットの位置情報データをドラッグ＆ドロップしてください。<br />
-            ※ データをアップロードするとこれまでの作業内容は失われます。</p>
+          <p>CSV または GeoJSON フォーマットの位置情報データをドラッグ＆ドロップしてください。</p>
         </div>
       </div>
     </div>

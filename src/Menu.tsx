@@ -18,10 +18,6 @@ const Component = (props: Props) => {
       icon: faHome,
     },
     {
-      path: '/table',
-      icon: faTable,
-    },
-    {
       path: '/download',
       icon: faDownload,
     },
