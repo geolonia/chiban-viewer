@@ -59,7 +59,11 @@ class MojMapGML2GeoJSON {
 				}
 			}
 		}
-		//
+
+    const r = Math.floor(Math.random()*(256));
+    const g = Math.floor(Math.random()*(256));
+    const b = Math.floor(Math.random()*(256));
+
 		var thema = moj["主題属性"];
 		for (var themaName in thema) {
 			var tds = thema[themaName];
@@ -67,15 +71,18 @@ class MojMapGML2GeoJSON {
 				var gm = MojMapGML2GeoJSON.getGeometry(td, kei);
         var props = MojMapGML2GeoJSON.getProperties(td);
 
-		if ('Polygon' !== gm.type || props['地番'].match(/^筆界未定地-/) || props['地番'].match(/^地区外-/) || props['地番'].match(/^道-/) || props['地番'].match(/^水-/)) {
-      continue;
-    }
-		var ft = {
-			geometry: gm,
-			properties: props,
-			type: "Feature",
-		};
+        if ('Polygon' !== gm.type || props['地番'].match(/^筆界未定地-/) || props['地番'].match(/^地区外-/) || props['地番'].match(/^道-/) || props['地番'].match(/^水-/)) {
+          continue;
+        }
+
+        var ft = {
+          geometry: gm,
+          properties: props,
+          type: "Feature",
+        };
+
         ft.properties.title = `${props['大字名']}${props['地番']}`
+        ft.properties.fill = `rgba(${r}, ${g}, ${b}, 0.8)`
 				geojsRoot.features.push(ft);
 			}
 		}
