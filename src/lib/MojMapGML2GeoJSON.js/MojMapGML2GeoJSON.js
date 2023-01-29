@@ -67,9 +67,9 @@ class MojMapGML2GeoJSON {
 				var gm = MojMapGML2GeoJSON.getGeometry(td, kei);
         var props = MojMapGML2GeoJSON.getProperties(td);
 
-		if ('Polygon' !== gm.type || props['地番'].match(/^道-/) || props['地番'].match(/^水-/)) {
-          continue;
-        }
+		if ('Polygon' !== gm.type || props['地番'].match(/^地区外-/) || props['地番'].match(/^道-/) || props['地番'].match(/^水-/)) {
+      continue;
+    }
 		var ft = {
 			geometry: gm,
 			properties: props,
