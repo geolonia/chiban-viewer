@@ -109,7 +109,6 @@ const Component = (props: Props) => {
     isDragAccept,
     isDragReject
   } = useDropzone({ accept: {
-    'application/octet-stream': ['.zip'],
     'text/plain': ['.xml'],
   }, onDrop, maxFiles: 100, });
 
@@ -130,7 +129,7 @@ const Component = (props: Props) => {
         <input {...getInputProps()} />
         <div>
           <p style={{ fontSize: '144px', margin: 0, lineHeight: '144px' }}><FontAwesomeIcon icon={ faCloudArrowUp } /></p>
-          <p>CSV または GeoJSON フォーマットの位置情報データをドラッグ＆ドロップしてください。</p>
+          <p>XML をドラッグ＆ドロップしてください。</p>
         </div>
       </div>
     </div>
