@@ -21,9 +21,8 @@
 import { XY2BL } from "./XY2BL.js";
 
 class MojMapGML2GeoJSON {
-	constructor() {
-		// 全部static
-	}
+  /* eslint-disable no-useless-constructor */
+	constructor() {}
 
 	static convert(mojMapXmlDOM) {
 		var refTable = {};
