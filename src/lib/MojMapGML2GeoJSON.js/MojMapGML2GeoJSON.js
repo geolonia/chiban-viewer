@@ -80,7 +80,6 @@ class MojMapGML2GeoJSON {
 			}
 		}
 
-    console.log(geojsRoot)
 		return geojsRoot;
 	}
 
