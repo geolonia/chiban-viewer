@@ -65,16 +65,16 @@ class MojMapGML2GeoJSON {
 			var tds = thema[themaName];
 			for (var td of tds) {
 				var gm = MojMapGML2GeoJSON.getGeometry(td, kei);
-        if ('Polygon' !== gm.type) {
+        var props = MojMapGML2GeoJSON.getProperties(td);
+
+		if ('Polygon' !== gm.type || props['地番'].match(/^道\-/) || props['地番'].match(/^水\-/)) {
           continue;
         }
-				var props = MojMapGML2GeoJSON.getProperties(td);
-        console.log(props)
-				var ft = {
-					geometry: gm,
-					properties: props,
-					type: "Feature",
-				};
+		var ft = {
+			geometry: gm,
+			properties: props,
+			type: "Feature",
+		};
         ft.properties.title = `${props['大字名']}${props['地番']}`
 				geojsRoot.features.push(ft);
 			}

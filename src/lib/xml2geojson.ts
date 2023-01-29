@@ -16,7 +16,5 @@ export function xml2geojson(xml: string) {
     geojson.features = _geojson.features
   }
 
-  console.log(geojson)
-
   return geojson
 }
