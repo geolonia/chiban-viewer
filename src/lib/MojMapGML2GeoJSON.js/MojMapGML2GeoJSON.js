@@ -82,7 +82,8 @@ class MojMapGML2GeoJSON {
         };
 
         ft.properties.title = `${props['大字名']}${props['地番']}`
-        ft.properties.fill = `rgba(${r}, ${g}, ${b}, 0.8)`
+        ft.properties.fill = `rgba(${r}, ${g}, ${b}, 0.7)`
+        ft.properties.stroke = '#FFFFFF'
 				geojsRoot.features.push(ft);
 			}
 		}

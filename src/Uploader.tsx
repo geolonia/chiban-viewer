@@ -74,6 +74,7 @@ const Component = (props: Props) => {
     }
 
     acceptedFiles.forEach((file: any) => {
+      const id = file.name.replace(/\..+?$/, '')
       const reader = new FileReader()
 
       reader.onabort = () => () => {}
@@ -85,7 +86,7 @@ const Component = (props: Props) => {
           geojson.features = JSON.parse(data).features
         } catch(e) {
           const _geojson = xml2geojson(data)
-          geojson.features = _geojson.features
+          geojson.features = _geojson.features // ここがめっちゃ重い
         }
 
         const el = document.querySelector('.uploader') as HTMLElement
@@ -93,8 +94,10 @@ const Component = (props: Props) => {
 
         props.dataCallback(geojson)
 
-        const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: file.name}).addTo(props.map).fitBounds()
-        simpleStyle.updateData(geojson).fitBounds()
+        if (! props.map.getSource(id)) {
+          const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map).fitBounds()
+          simpleStyle.updateData(geojson).fitBounds()
+        }
       }
 
       reader.readAsText(file)
