@@ -29,8 +29,7 @@ const Home = () => {
     <HashRouter>
       <Routes>
         <Route path="/" element={<></>} />
-        <Route path="/table" element={<Table data={data} />} />
-        <Route path="/download" element={<Download data={data} />} />
+        <Route path="/download" element={<Download data={data} map={map} />} />
         <Route path="/settings" element={<Settings data={data} />} />
       </Routes>
       <Uploader className="uploader" map={map} dataCallback={setData}></Uploader>
