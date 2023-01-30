@@ -1,5 +1,4 @@
-import { calculateNewValue } from '@testing-library/user-event/dist/utils';
-import React, { CSSProperties } from 'react';
+import React from 'react';
 
 interface Props {
   className?: string;
@@ -13,7 +12,7 @@ const style = {
   overflow: 'scroll',
   boxSizing: 'border-box',
   padding: '8px'
-} as CSSProperties
+} as React.CSSProperties
 
 const Component = (props: Props) => {
   return (
