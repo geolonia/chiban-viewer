@@ -2,6 +2,10 @@
 
 本プロジェクトは、全国の登記所備付地図の電子データ用の XML ビューワーです。
 
+以下の URL でご利用になることができます。
+
+https://geolonia.github.io/chiban-viewer/#0.93/0/0
+
 XML ファイルを地図上にドラッグ&ドロップすると、XML の内容が地図上に表示されます。
 
 ![](https://www.evernote.com/l/ABWVzpjqNGFEDa2viF1DoX1q-aqMwozVxG8B/image.png)
