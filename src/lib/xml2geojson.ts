@@ -1,11 +1,11 @@
 import proj, {JP_ZONE_TO_EPSG_MAP} from "./proj"
 
-const geojson = {
-  "type": "FeatureCollection",
-  "features": []
-} as GeoJSON.FeatureCollection
-
 export const xml2geojson = (xml: string) => {
+
+  const geojson = {
+    "type": "FeatureCollection",
+    "features": []
+  } as GeoJSON.FeatureCollection
 
   const dom = new DOMParser().parseFromString(xml, "text/xml")
   const 座標系 = dom.getElementsByTagName('座標系')[0].textContent
@@ -27,40 +27,39 @@ export const xml2geojson = (xml: string) => {
 
     for (let j= 0; j < props.length; j++) {
       const node = props[j] as Element
-      if (props[j].nodeName && '#text' !== props[j].nodeName) {
+      if (node.nodeName && '#text' !== node.nodeName) {
         if (node.attributes && node.attributes.getNamedItem('idref')) {
           // @ts-ignore
-          feature.properties[props[j].nodeName] = node.attributes.getNamedItem('idref').value
-          // @ts-ignore
-          const type = getGeometryType(dom, node.attributes.getNamedItem('idref').value)
-          feature.geometry.type = type
-          // @ts-ignore
-          const cooordinates = getCoordinates(dom, node.attributes.getNamedItem('idref').value)
+          feature.properties[node.nodeName] = node.attributes.getNamedItem('idref').value
 
-          // @ts-ignore
-          feature.geometry.coordinates = cooordinates
+          if ('形状' === node.nodeName) {
+            // @ts-ignore
+            const type = getGeometryType(dom, node.attributes.getNamedItem('idref').value)
+            feature.geometry.type = type
+            // @ts-ignore
+            const cooordinates = getCoordinates(dom, node.attributes.getNamedItem('idref').value)
+
+            // @ts-ignore
+            feature.geometry.coordinates = cooordinates
+          }
         } else {
           // @ts-ignore
-          feature.properties[props[j].nodeName] = node.textContent
+          feature.properties[node.nodeName] = node.textContent
         }
       }
+    }
+
+    if (feature.properties && feature.properties['地番'].match(/^(別図|地区外)-/)) {
+      continue;
     }
 
     geojson.features.push(feature)
   }
 
-  console.log(JSON.stringify(geojson, null, '  '))
   return geojson
 }
 
 
-/**
- * GeoJSON の Feature の geometry.type を判別する。
- *
- * @param dom
- * @param id
- * @returns
- */
 const getGeometryType = (dom: XMLDocument, id: string) => {
   const ref = dom.getElementById(id)
   if (ref) {
@@ -103,8 +102,7 @@ const resolveTopology = (dom: XMLDocument, node: Element) => {
 
 const pointsToXY = (dom: XMLDocument, nodes: HTMLCollectionOf<Element>) => {
   // @ts-ignore
-  const 座標系 = JP_ZONE_TO_EPSG_MAP[dom.getElementsByTagName('座標系')[0].textContent]
-  console.log(座標系)
+  const 座標系 = JP_ZONE_TO_EPSG_MAP[dom.getElementsByTagName('座標系')[0].textContent] || 'EPSG:4326'
 
   if (nodes && 座標系) {
     let coordinate
