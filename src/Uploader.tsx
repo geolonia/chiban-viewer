@@ -112,7 +112,7 @@ const Component = (props: Props) => {
     isDragAccept,
     isDragReject
   } = useDropzone({ accept: {
-    'text/plain': ['.xml'],
+    'text/plain': ['.xml', '.json', '.geojson'],
   }, onDrop, maxFiles: 100, });
 
   const style = React.useMemo(() => ({
