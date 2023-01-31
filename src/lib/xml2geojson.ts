@@ -1,6 +1,9 @@
 import proj, {JP_ZONE_TO_EPSG_MAP} from "./proj"
 
 export const xml2geojson = (xml: string) => {
+  const r = Math.floor(Math.random()*(256));
+  const g = Math.floor(Math.random()*(256));
+  const b = Math.floor(Math.random()*(256));
 
   const geojson = {
     "type": "FeatureCollection",
@@ -51,6 +54,12 @@ export const xml2geojson = (xml: string) => {
 
     if (feature.properties && feature.properties['地番'].match(/^(別図|地区外)-/)) {
       continue;
+    }
+
+    if (feature.properties) {
+      feature.properties.title = `${feature.properties['大字名']}${feature.properties['地番']}`
+      feature.properties.fill = `rgba(${r}, ${g}, ${b}, 0.7)`
+      feature.properties.stroke = '#FFFFFF'
     }
 
     geojson.features.push(feature)
