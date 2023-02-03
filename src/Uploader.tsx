@@ -73,8 +73,11 @@ const Component = (props: Props) => {
       return
     }
 
-    const el = document.querySelector('.uploader') as HTMLElement
-    el.style.display = "none"
+    const uploader = document.querySelector('.uploader') as HTMLElement
+    uploader.style.display = "none"
+
+    const loading = document.querySelector('.loading') as HTMLElement
+    loading.style.display = "block"
 
     for (let i = 0; i < acceptedFiles.length; i++) {
       const file = acceptedFiles[i]
@@ -84,14 +87,14 @@ const Component = (props: Props) => {
 
       reader.onabort = () => () => {}
       reader.onerror = () => console.log('file reading has failed')
-      reader.onload = () => {
+      reader.onload = async () => {
         const data = reader.result as string
 
         try {
           geojson.features = JSON.parse(data).features
         } catch(e) {
           const _geojson = xml2geojson(data)
-          geojson.features = _geojson.features // ここがめっちゃ重い
+          geojson.features = _geojson.features
         }
 
         props.dataCallback(geojson)
@@ -100,6 +103,7 @@ const Component = (props: Props) => {
           if (i + 1 === acceptedFiles.length) {
             const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map).fitBounds()
             simpleStyle.updateData(geojson).fitBounds()
+            loading.style.display = "none"
           } else {
             const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map)
             simpleStyle.updateData(geojson)
@@ -109,6 +113,7 @@ const Component = (props: Props) => {
 
       reader.readAsText(file)
     }
+
   }, [props])
 
   const {

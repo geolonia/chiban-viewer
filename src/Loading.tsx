@@ -13,7 +13,7 @@ const Component = (props: Props) => {
     <div className={props.className}>
       <div style={style}>
         <div>
-          <p style={{ fontSize: '144px', margin: 0, lineHeight: '144px' }}>Loading ...</p>
+          <p>地図 XML をロードしています ...</p>
         </div>
       </div>
     </div>
