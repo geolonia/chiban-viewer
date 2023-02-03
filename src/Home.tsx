@@ -12,6 +12,7 @@ import {
 import Map from './Map'
 import Uploader from './Uploader'
 import Menu from './Menu'
+import Loading from './Loading'
 
 import './Home.scss';
 
@@ -32,6 +33,7 @@ const Home = () => {
         <Route path="/settings" element={<Settings data={data} />} />
       </Routes>
       <Uploader className="uploader" map={map} dataCallback={setData}></Uploader>
+      <Loading className='loading'></Loading>
       <Menu className='menu'></Menu>
       <Map className="map" setmap={setMap} />
     </HashRouter>
