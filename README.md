@@ -4,11 +4,11 @@
 
 以下の URL でご利用ください。
 
-https://geolonia.github.io/chiban-viewer/#0.93/0/0
+https://geolonia.github.io/chiban-viewer/
 
 XML ファイルを地図上にドラッグ&ドロップすると、XML の内容が地図上に表示されます。
 
-![](https://www.evernote.com/l/ABWVzpjqNGFEDa2viF1DoX1q-aqMwozVxG8B/image.png)
+![](https://www.evernote.com/l/ABU2QFHWaFlKiq7eugxMHQrA9m_AhsZx8mAB/image.png)
 
 XML ファイルは G 空間情報センターからダウンロードしてください。（G 空間情報センターへのログインが必要です。）
 
