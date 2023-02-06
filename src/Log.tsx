@@ -19,6 +19,11 @@ const Component = (props: Props) => {
 
   const click = React.useCallback((event: React.MouseEvent<HTMLTableRowElement>) => {
     const key = Number(event.currentTarget.sectionRowIndex)
+
+    if ('任意座標系' === props.geojsons[key].projection) {
+      return
+    }
+
     const geojson = props.geojsons[key].geojson
 
     const options = {
@@ -27,7 +32,6 @@ const Component = (props: Props) => {
     };
 
     const bounds = geojsonExtent(geojson);
-    console.log(bounds)
 
     if (bounds) {
       window.requestAnimationFrame(() => {

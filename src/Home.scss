@@ -132,6 +132,11 @@ html, body, #root, .map, .main, .uploader
   tbody
   {
     background-color: #212121;
+
+    tr
+    {
+      cursor: pointer;
+    }
   }
 
   th, td
