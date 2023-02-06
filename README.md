@@ -8,7 +8,7 @@ https://geolonia.github.io/chiban-viewer/
 
 XML ファイルを地図上にドラッグ&ドロップすると、XML の内容が地図上に表示されます。
 
-![](https://www.evernote.com/l/ABU2QFHWaFlKiq7eugxMHQrA9m_AhsZx8mAB/image.png)
+![](https://www.evernote.com/l/ABXjSKFgEehMh4NQgtuNsJyLj-3UoDcGS1kB/image.png)
 
 XML ファイルは G 空間情報センターからダウンロードしてください。（G 空間情報センターへのログインが必要です。）
 
