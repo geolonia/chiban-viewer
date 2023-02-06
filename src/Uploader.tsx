@@ -161,7 +161,7 @@ const Component = (props: Props) => {
         <input {...getInputProps()} />
         <div>
           <p style={{ fontSize: '144px', margin: 0, lineHeight: '144px' }}><FontAwesomeIcon icon={ faCloudArrowUp } /></p>
-          <p>地図 XML ファイルをここにドラッグ＆ドロップしてください。<br />最大ファイル数: { maxFiles }</p>
+          <p>地図 XML ファイル（または .zip ファイル）をここにドラッグ＆ドロップしてください。<br />最大で{ maxFiles }個のファイルをアップロードすることができます。</p>
         </div>
       </div>
     </div>
