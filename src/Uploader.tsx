@@ -143,6 +143,8 @@ const Component = (props: Props) => {
             const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map)
             simpleStyle.updateData(geojson)
           }
+        } else {
+          loading.style.display = "none"
         }
       }
 
