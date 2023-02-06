@@ -1,42 +1,36 @@
 import React from 'react';
 
-import Download from './Download';
-import Settings from './Settings';
-
-import {
-  HashRouter,
-  Routes,
-  Route,
-} from "react-router-dom";
-
 import Map from './Map'
 import Uploader from './Uploader'
-import Menu from './Menu'
 import Loading from './Loading'
+import Log from './Log'
 
 import './Home.scss';
 
-const geojson = {
-  "type": "FeatureCollection",
-  "features": []
-} as GeoJSON.FeatureCollection
+interface XMLData {
+  name: string;
+  projection: string;
+  geojson: GeoJSON.FeatureCollection;
+}
 
 const Home = () => {
   const [ map, setMap ] = React.useState()
-  const [ data, setData ] = React.useState<GeoJSON.FeatureCollection>(geojson)
+  const [ data, setData ] = React.useState<XMLData>()
+  const [ geoJSONs, setGeoJSONs ] = React.useState<XMLData[]>([])
+
+  React.useEffect(() => {
+    if (data && data.geojson.features && data.geojson.features.length) {
+      setGeoJSONs(array => [data, ...array])
+    }
+  }, [data])
 
   return (
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<></>} />
-        <Route path="/download" element={<Download data={data} map={map} />} />
-        <Route path="/settings" element={<Settings data={data} />} />
-      </Routes>
+    <div>
       <Uploader className="uploader" map={map} dataCallback={setData}></Uploader>
       <Loading className='loading'></Loading>
-      <Menu className='menu'></Menu>
       <Map className="map" setmap={setMap} />
-    </HashRouter>
+      <Log className='log' geojsons={geoJSONs} map={map}></Log>
+    </div>
   );
 }
 
