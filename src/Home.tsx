@@ -25,7 +25,7 @@ const Home = () => {
   }, [data])
 
   return (
-    <div>
+    <div className='main'>
       <Uploader className="uploader" map={map} dataCallback={setData}></Uploader>
       <Loading className='loading'></Loading>
       <Map className="map" setmap={setMap} />
