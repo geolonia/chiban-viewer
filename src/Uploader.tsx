@@ -4,8 +4,11 @@ import {useDropzone} from 'react-dropzone'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons"
+import { BlobReader, TextWriter, ZipReader } from "@zip.js/zip.js";
 
 import { xml2geojson } from "./lib/xml2geojson"
+
+const maxFiles = 10
 
 const baseStyle = {
   flex: 1,
@@ -73,6 +76,10 @@ const Component = (props: Props) => {
       return
     }
 
+    if (0 === acceptedFiles.length) {
+      return
+    }
+
     const uploader = document.querySelector('.uploader') as HTMLElement
     uploader.style.display = "none"
 
@@ -88,7 +95,17 @@ const Component = (props: Props) => {
       reader.onabort = () => () => {}
       reader.onerror = () => console.log('file reading has failed')
       reader.onload = async () => {
-        const data = reader.result as string
+
+        let data = ''
+
+        if ('application/zip' === file.type) {
+          const entry = (await (new ZipReader(new BlobReader(file))).getEntries({ filenameEncoding: 'utf-8' })).shift();
+          if (entry) {
+            data = await entry.getData(new TextWriter())
+          }
+        } else {
+          data = reader.result as string
+        }
 
         try {
           geojson.features = JSON.parse(data).features
@@ -123,8 +140,9 @@ const Component = (props: Props) => {
     isDragAccept,
     isDragReject
   } = useDropzone({ accept: {
+    'application/zip': ['.zip'],
     'text/plain': ['.xml', '.json', '.geojson'],
-  }, onDrop, maxFiles: 100, });
+  }, onDrop, maxFiles: maxFiles, });
 
   const style = React.useMemo(() => ({
     ...baseStyle,
@@ -143,7 +161,7 @@ const Component = (props: Props) => {
         <input {...getInputProps()} />
         <div>
           <p style={{ fontSize: '144px', margin: 0, lineHeight: '144px' }}><FontAwesomeIcon icon={ faCloudArrowUp } /></p>
-          <p>地図 XML ファイルをここにドラッグ＆ドロップしてください。</p>
+          <p>地図 XML ファイルをここにドラッグ＆ドロップしてください。<br />最大ファイル数: { maxFiles }</p>
         </div>
       </div>
     </div>
