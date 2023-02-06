@@ -59,11 +59,6 @@ interface Props {
   dataCallback: Function;
 }
 
-const geojson = {
-  "type": "FeatureCollection",
-  "features": []
-} as GeoJSON.FeatureCollection
-
 const Component = (props: Props) => {
 
   React.useEffect(() => {
@@ -87,6 +82,11 @@ const Component = (props: Props) => {
     loading.style.display = "block"
 
     for (let i = 0; i < acceptedFiles.length; i++) {
+      const geojson = {
+        "type": "FeatureCollection",
+        "features": []
+      } as GeoJSON.FeatureCollection
+
       const file = acceptedFiles[i]
 
       const id = file.name.replace(/\..+?$/, '')
@@ -97,24 +97,42 @@ const Component = (props: Props) => {
       reader.onload = async () => {
 
         let data = ''
+        let filename = ''
+        let projection = ''
 
         if ('application/zip' === file.type) {
-          const entry = (await (new ZipReader(new BlobReader(file))).getEntries({ filenameEncoding: 'utf-8' })).shift();
+          const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
           if (entry) {
             data = await entry.getData(new TextWriter())
+            filename = entry.filename
           }
         } else {
           data = reader.result as string
+          filename = file.name
         }
 
         try {
           geojson.features = JSON.parse(data).features
         } catch(e) {
           const _geojson = xml2geojson(data)
-          geojson.features = _geojson.features
+          if (_geojson.geojson) {
+            geojson.features = _geojson.geojson.features
+          }
+          if (_geojson.projection) {
+            projection = _geojson.projection
+          }
         }
 
-        props.dataCallback(geojson)
+        props.dataCallback({
+          name: filename,
+          projection: projection,
+          geojson: geojson,
+        })
+
+        if ('任意座標系' === projection) {
+          loading.style.display = "none"
+          return
+        }
 
         if (! props.map.getSource(id)) {
           if (i + 1 === acceptedFiles.length) {

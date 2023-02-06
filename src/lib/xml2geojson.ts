@@ -1,6 +1,11 @@
 import proj, {JP_ZONE_TO_EPSG_MAP} from "./proj"
 
-export const xml2geojson = (xml: string) => {
+interface Data {
+  geojson?: GeoJSON.FeatureCollection;
+  projection?: string;
+}
+
+export const xml2geojson = (xml: string): Data => {
   const r = Math.floor(Math.random()*(256));
   const g = Math.floor(Math.random()*(256));
   const b = Math.floor(Math.random()*(256));
@@ -11,10 +16,10 @@ export const xml2geojson = (xml: string) => {
   } as GeoJSON.FeatureCollection
 
   const dom = new DOMParser().parseFromString(xml, "text/xml")
-  const 座標系 = dom.getElementsByTagName('座標系')[0].textContent
+  const projection = dom.getElementsByTagName('座標系')[0].textContent
 
-  if ('任意座標' === 座標系) {
-    return geojson
+  if (! projection || '任意座標' === projection) {
+    return {}
   }
 
   const 筆s = dom.getElementsByTagName('筆')
@@ -65,7 +70,10 @@ export const xml2geojson = (xml: string) => {
     geojson.features.push(feature)
   }
 
-  return geojson
+  return {
+    geojson: geojson,
+    projection: projection,
+  }
 }
 
 
