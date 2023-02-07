@@ -5,6 +5,7 @@ interface XMLData {
   geojson?: GeoJSON.FeatureCollection;
   count: number;
   projection?: string;
+  color?: string;
 }
 
 export const xml2geojson = (xml: string): XMLData => {
@@ -24,12 +25,13 @@ export const xml2geojson = (xml: string): XMLData => {
   const 筆s = dom.getElementsByTagName('筆')
   const count = 筆s.length || 0
 
-  if (! projection || '任意座標' === projection) {
+  if (! projection || '任意座標系' === projection) {
     return {
       name: name,
       count: count,
       geojson: geojson,
       projection: projection,
+      color: '',
     }
   }
 
@@ -84,6 +86,7 @@ export const xml2geojson = (xml: string): XMLData => {
     count: count,
     geojson: geojson,
     projection: projection,
+    color: `rgb(${r}, ${g}, ${b})`,
   }
 }
 

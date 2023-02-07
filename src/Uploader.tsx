@@ -101,6 +101,7 @@ const Component = (props: Props) => {
           let filename = ''
           let projection = ''
           let count = 0
+          let color = ''
 
           if ('application/zip' === file.type) {
             const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
@@ -133,6 +134,7 @@ const Component = (props: Props) => {
             }
 
             count =  _geojson.count
+            color = _geojson.color || ''
           }
 
           props.dataCallback({
@@ -141,6 +143,7 @@ const Component = (props: Props) => {
             projection: projection,
             count: count,
             geojson: geojson,
+            color: color,
           })
 
           if ('任意座標系' !== projection) {

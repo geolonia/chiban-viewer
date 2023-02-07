@@ -20,7 +20,7 @@ const Home = () => {
   const [ geoJSONs, setGeoJSONs ] = React.useState<XMLData[]>([])
 
   React.useEffect(() => {
-    if (data && data.geojson.features && data.geojson.features.length) {
+    if (data) {
       setGeoJSONs(array => [data, ...array])
     }
   }, [data])

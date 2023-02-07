@@ -59,7 +59,7 @@ const Component = (props: Props) => {
             }
 
             return <tr key={i} onMouseEnter={mouseenter} onMouseLeave={mouseleave} onClick={click} style={style}>
-                <td>{item.name}</td>
+                <td><span style={{ color: item.color || '#333333' }}>■</span> {item.name}</td>
                 <td>{item.filename}</td>
                 <td>{item.count}</td>
                 <td>{item.projection}</td>
