@@ -5,6 +5,7 @@ import {useDropzone} from 'react-dropzone'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons"
 import { BlobReader, TextWriter, ZipReader } from "@zip.js/zip.js";
+import geojsonExtent from '@mapbox/geojson-extent';
 
 import { xml2geojson } from "./lib/xml2geojson"
 
@@ -81,87 +82,104 @@ const Component = (props: Props) => {
     const loading = document.querySelector('.loading') as HTMLElement
     loading.style.display = "block"
 
-    let counter = 0;
+    const promises = []
 
     for (let i = 0; i < acceptedFiles.length; i++) {
-      const geojson = {
-        "type": "FeatureCollection",
-        "features": []
-      } as GeoJSON.FeatureCollection
+      const promise = new Promise((resolve, reject) => {
+        const geojson = {
+          "type": "FeatureCollection",
+          "features": []
+        } as GeoJSON.FeatureCollection
 
-      const file = acceptedFiles[i]
+        const file = acceptedFiles[i]
 
-      const id = file.name.replace(/\..+?$/, '')
-      const reader = new FileReader()
+        const id = file.name.replace(/\..+?$/, '')
+        const reader = new FileReader()
 
-      reader.onabort = () => () => {}
-      reader.onerror = () => console.log('file reading has failed')
+        reader.onabort = () => () => {}
+        reader.onerror = () => console.log('file reading has failed')
 
-      reader.onload = async () => {
-        let data = ''
-        let name = ''
-        let filename = ''
-        let projection = ''
-        let count = 0
+        reader.onload = async () => {
+          let data = ''
+          let name = ''
+          let filename = ''
+          let projection = ''
+          let count = 0
 
-        if ('application/zip' === file.type) {
-          const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
-          if (entry) {
-            data = await entry.getData(new TextWriter())
-            filename = entry.filename
-          }
-        } else {
-          data = reader.result as string
-          filename = file.name
-        }
-
-        try {
-          geojson.features = JSON.parse(data).features
-        } catch(e) {
-          const _geojson = xml2geojson(data)
-          if (_geojson.geojson) {
-            geojson.features = _geojson.geojson.features
-          }
-          if (_geojson.projection) {
-            projection = _geojson.projection
-          }
-          if (_geojson.name) {
-            name = _geojson.name
-          }
-
-          count =  _geojson.count
-        }
-
-        props.dataCallback({
-          name: name,
-          filename: filename,
-          projection: projection,
-          count: count,
-          geojson: geojson,
-        })
-
-        counter = counter + 1
-        if (counter === acceptedFiles.length) {
-          loading.style.display = "none"
-        }
-
-        if ('任意座標系' === projection) {
-          return
-        }
-
-        if (! props.map.getSource(id)) {
-          if (counter === acceptedFiles.length) {
-            const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map).fitBounds()
-            simpleStyle.updateData(geojson).fitBounds()
+          if ('application/zip' === file.type) {
+            const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
+            if (entry) {
+              data = await entry.getData(new TextWriter())
+              filename = entry.filename
+            }
           } else {
-            const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map)
-            simpleStyle.updateData(geojson)
+            data = reader.result as string
+            filename = file.name
+          }
+
+          try {
+            geojson.features = JSON.parse(data).features
+          } catch(e) {
+            const _geojson = xml2geojson(data)
+            if (_geojson.geojson) {
+              geojson.features = _geojson.geojson.features
+            }
+            if (_geojson.projection) {
+              projection = _geojson.projection
+            }
+            if (_geojson.name) {
+              name = _geojson.name
+            }
+
+            count =  _geojson.count
+          }
+
+          props.dataCallback({
+            name: name,
+            filename: filename,
+            projection: projection,
+            count: count,
+            geojson: geojson,
+          })
+
+          if ('任意座標系' !== projection) {
+            setTimeout(() => {
+              resolve(geojson)
+            }, 2000)
+
+            if (! props.map.getSource(id)) {
+              const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map)
+              simpleStyle.updateData(geojson)
+            }
+          } else {
+            reject()
           }
         }
+
+        reader.readAsText(file)
+      }) // end Promise()
+
+      promises.push(promise)
+    }
+
+    Promise.all(promises).then((res) => {
+      const geojson = res.shift() as GeoJSON.FeatureCollection
+
+      const options = {
+        duration: 3000,
+        padding: 30,
+      };
+
+      const bounds = geojsonExtent(geojson);
+
+      if (bounds) {
+        window.requestAnimationFrame(() => {
+          props.map.fitBounds(bounds, options);
+        });
       }
 
-      reader.readAsText(file)
-    }
+      loading.style.display = "none"
+    })
 
   }, [props])
 
