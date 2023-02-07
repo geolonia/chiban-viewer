@@ -149,7 +149,7 @@ const Component = (props: Props) => {
           if ('任意座標系' !== projection) {
             setTimeout(() => {
               resolve(geojson)
-            }, 2000)
+            }, 500 * acceptedFiles.length)
 
             if (! props.map.getSource(id)) {
               const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map)
@@ -170,14 +170,30 @@ const Component = (props: Props) => {
     }
 
     Promise.all(promises).then((res) => {
-      const geojson = res.shift() as GeoJSON.FeatureCollection
+      const data = res.reverse()
+      let merged = {
+        "type": "FeatureCollection",
+        "features": []
+      } as GeoJSON.FeatureCollection
+      let features = [] as any
+
+      for (let i = 0; i < data.length; i++) {
+        const geojson = data[i] as GeoJSON.FeatureCollection
+        if (! geojson.features.length) {
+          continue;
+        }
+
+        features = features.concat(geojson.features)
+      }
+
+      merged.features = features
 
       const options = {
         duration: 3000,
         padding: 30,
       };
 
-      const bounds = geojsonExtent(geojson);
+      const bounds = geojsonExtent(merged);
 
       if (bounds) {
         window.requestAnimationFrame(() => {
