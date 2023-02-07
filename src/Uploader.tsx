@@ -28,11 +28,11 @@ const baseStyle = {
 }
 
 const focusedStyle = {
-  // borderColor: '#FF0000'
+  borderColor: '#FFFFFF'
 }
 
 const acceptStyle = {
-  // borderColor: '#FF0000'
+  borderColor: '#FFFFFF'
 }
 
 const rejectStyle = {
