@@ -85,12 +85,8 @@ const Component = (props: Props) => {
     const promises = []
 
     for (let i = 0; i < acceptedFiles.length; i++) {
+      /* eslint-disable no-loop-func */
       const promise = new Promise((resolve, reject) => {
-        const geojson = {
-          "type": "FeatureCollection",
-          "features": []
-        } as GeoJSON.FeatureCollection
-
         const file = acceptedFiles[i]
 
         const id = file.name.replace(/\..+?$/, '')
@@ -116,6 +112,11 @@ const Component = (props: Props) => {
             data = reader.result as string
             filename = file.name
           }
+
+          const geojson = {
+            "type": "FeatureCollection",
+            "features": []
+          } as GeoJSON.FeatureCollection
 
           try {
             geojson.features = JSON.parse(data).features
@@ -178,6 +179,8 @@ const Component = (props: Props) => {
         });
       }
 
+      loading.style.display = "none"
+    }).catch(() => {
       loading.style.display = "none"
     })
 
