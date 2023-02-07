@@ -153,7 +153,10 @@ const Component = (props: Props) => {
               simpleStyle.updateData(geojson)
             }
           } else {
-            reject()
+            resolve({
+              "type": "FeatureCollection",
+              "features": []
+            })
           }
         }
 
@@ -181,7 +184,7 @@ const Component = (props: Props) => {
 
       loading.style.display = "none"
     }).catch(() => {
-      loading.style.display = "none"
+      // nothing todo
     })
 
   }, [props])
