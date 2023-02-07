@@ -36,7 +36,7 @@ const acceptStyle = {
 }
 
 const rejectStyle = {
-  // borderColor: '#FF0000',
+  borderColor: '#FF0000',
 }
 
 let lastTarget: any = null; // cache the last target here
@@ -216,7 +216,7 @@ const Component = (props: Props) => {
     isDragReject
   } = useDropzone({ accept: {
     'application/zip': ['.zip'],
-    'text/plain': ['.xml', '.json', '.geojson'],
+    'text/plain': ['.xml'],
   }, onDrop, maxFiles: maxFiles, });
 
   const style = React.useMemo(() => ({
