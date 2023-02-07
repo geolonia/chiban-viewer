@@ -10,6 +10,7 @@ import './Home.scss';
 interface XMLData {
   name: string;
   projection: string;
+  count: number;
   geojson: GeoJSON.FeatureCollection;
 }
 

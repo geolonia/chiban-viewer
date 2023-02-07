@@ -43,7 +43,7 @@ const Component = (props: Props) => {
   return (
     <div className={props.className}>
       <table className="log-table">
-        <thead><tr><th>ファイル名</th><th>座標系</th><th>GeoJSON</th></tr></thead>
+        <thead><tr><th>地図名</th><th>ファイル名</th><th>データ数</th><th>座標系</th><th>GeoJSON</th></tr></thead>
         <tbody>
           {props.geojsons.map(function(item, i){
             let link = <></>
@@ -52,7 +52,7 @@ const Component = (props: Props) => {
             if ('任意座標系' !== item.projection) {
               const json = JSON.stringify(item.geojson, null, '  ')
               const href = `data:application/csv;charset=UTF-8,${encodeURIComponent(json)}`
-              const download = item.name.replace(/\.xml$/, '.geojson')
+              const download = item.filename.replace(/\.xml$/, '.geojson')
 
               link = <a data-key={i} download={download} href={href}>ダウンロード</a>
               style = {color: '#FFFFFF'}
@@ -60,6 +60,8 @@ const Component = (props: Props) => {
 
             return <tr key={i} onMouseEnter={mouseenter} onMouseLeave={mouseleave} onClick={click} style={style}>
                 <td>{item.name}</td>
+                <td>{item.filename}</td>
+                <td>{item.count}</td>
                 <td>{item.projection}</td>
                 <td>{link}</td>
               </tr>;

@@ -1,11 +1,13 @@
 import proj, {JP_ZONE_TO_EPSG_MAP} from "./proj"
 
-interface Data {
+interface XMLData {
+  name?: string;
   geojson?: GeoJSON.FeatureCollection;
+  count: number;
   projection?: string;
 }
 
-export const xml2geojson = (xml: string): Data => {
+export const xml2geojson = (xml: string): XMLData => {
   const r = Math.floor(Math.random()*(256));
   const g = Math.floor(Math.random()*(256));
   const b = Math.floor(Math.random()*(256));
@@ -16,13 +18,20 @@ export const xml2geojson = (xml: string): Data => {
   } as GeoJSON.FeatureCollection
 
   const dom = new DOMParser().parseFromString(xml, "text/xml")
-  const projection = dom.getElementsByTagName('座標系')[0].textContent
-
-  if (! projection || '任意座標' === projection) {
-    return {}
-  }
+  const projection = dom.getElementsByTagName('座標系')[0].textContent || ''
+  const name = dom.getElementsByTagName('地図名')[0].textContent || ''
 
   const 筆s = dom.getElementsByTagName('筆')
+  const count = 筆s.length || 0
+
+  if (! projection || '任意座標' === projection) {
+    return {
+      name: name,
+      count: count,
+      geojson: geojson,
+      projection: projection,
+    }
+  }
 
   for (let i = 0; i < 筆s.length; i++) {
     const feature = {
@@ -63,14 +72,16 @@ export const xml2geojson = (xml: string): Data => {
 
     if (feature.properties) {
       feature.properties.title = `${feature.properties['大字名']}${feature.properties['地番']}`
-      feature.properties.fill = `rgba(${r}, ${g}, ${b}, 0.7)`
-      feature.properties.stroke = '#FFFFFF'
+      feature.properties.fill = `rgba(${r}, ${g}, ${b}, 0.6)`
+      feature.properties.stroke = `#FFFFFF`
     }
 
     geojson.features.push(feature)
   }
 
   return {
+    name: name,
+    count: count,
     geojson: geojson,
     projection: projection,
   }

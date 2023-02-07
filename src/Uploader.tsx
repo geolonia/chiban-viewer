@@ -8,7 +8,7 @@ import { BlobReader, TextWriter, ZipReader } from "@zip.js/zip.js";
 
 import { xml2geojson } from "./lib/xml2geojson"
 
-const maxFiles = 10
+const maxFiles = 100
 
 const baseStyle = {
   flex: 1,
@@ -81,6 +81,8 @@ const Component = (props: Props) => {
     const loading = document.querySelector('.loading') as HTMLElement
     loading.style.display = "block"
 
+    let counter = 0;
+
     for (let i = 0; i < acceptedFiles.length; i++) {
       const geojson = {
         "type": "FeatureCollection",
@@ -94,11 +96,13 @@ const Component = (props: Props) => {
 
       reader.onabort = () => () => {}
       reader.onerror = () => console.log('file reading has failed')
-      reader.onload = async () => {
 
+      reader.onload = async () => {
         let data = ''
+        let name = ''
         let filename = ''
         let projection = ''
+        let count = 0
 
         if ('application/zip' === file.type) {
           const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
@@ -121,30 +125,38 @@ const Component = (props: Props) => {
           if (_geojson.projection) {
             projection = _geojson.projection
           }
+          if (_geojson.name) {
+            name = _geojson.name
+          }
+
+          count =  _geojson.count
         }
 
         props.dataCallback({
-          name: filename,
+          name: name,
+          filename: filename,
           projection: projection,
+          count: count,
           geojson: geojson,
         })
 
-        if ('任意座標系' === projection) {
+        counter = counter + 1
+        if (counter === acceptedFiles.length) {
           loading.style.display = "none"
+        }
+
+        if ('任意座標系' === projection) {
           return
         }
 
         if (! props.map.getSource(id)) {
-          if (i + 1 === acceptedFiles.length) {
+          if (counter === acceptedFiles.length) {
             const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map).fitBounds()
             simpleStyle.updateData(geojson).fitBounds()
-            loading.style.display = "none"
           } else {
             const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map)
             simpleStyle.updateData(geojson)
           }
-        } else {
-          loading.style.display = "none"
         }
       }
 
