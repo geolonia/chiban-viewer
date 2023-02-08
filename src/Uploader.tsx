@@ -58,6 +58,7 @@ interface Props {
   className: string;
   map: any;
   dataCallback: Function;
+  setid: Function;
 }
 
 const Component = (props: Props) => {
@@ -143,7 +144,10 @@ const Component = (props: Props) => {
             count: count,
             geojson: geojson,
             color: color,
+            resolve: resolve,
           })
+
+          props.setid(id)
 
           if ('任意座標系' !== projection) {
             if (! props.map.getSource(id)) {

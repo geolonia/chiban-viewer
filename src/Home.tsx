@@ -12,22 +12,25 @@ interface XMLData {
   projection: string;
   count: number;
   geojson: GeoJSON.FeatureCollection;
+  resolve: Function;
 }
 
 const Home = () => {
   const [ map, setMap ] = React.useState()
+  const [ id, setId ] = React.useState<string>('')
   const [ data, setData ] = React.useState<XMLData>()
   const [ geoJSONs, setGeoJSONs ] = React.useState<XMLData[]>([])
 
   React.useEffect(() => {
-    if (data) {
+    if (id && data) {
       setGeoJSONs(array => [data, ...array])
+      data.resolve(data.geojson)
     }
-  }, [data])
+  }, [id, data])
 
   return (
     <div className='main'>
-      <Uploader className="uploader" map={map} dataCallback={setData}></Uploader>
+      <Uploader className="uploader" map={map} dataCallback={setData} setid={setId}></Uploader>
       <Loading className='loading'></Loading>
       <Map className="map" setmap={setMap} />
       <Log className='log' geojsons={geoJSONs} map={map}></Log>
