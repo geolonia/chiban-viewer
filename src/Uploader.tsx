@@ -90,18 +90,25 @@ const Component = (props: Props) => {
         const file = acceptedFiles[i]
 
         const id = file.name.replace(/\..+?$/, '')
+
+        if (props.map.getSource(id)) { // 重複のためスキップ
+          resolve({
+            "type": "FeatureCollection",
+            "features": []
+          })
+
+          return
+        }
+
         const reader = new FileReader()
+        reader.readAsText(file)
 
         reader.onabort = () => () => {}
         reader.onerror = () => console.log('file reading has failed')
 
         reader.onload = async () => {
           let data = ''
-          let name = ''
           let filename = ''
-          let projection = ''
-          let count = 0
-          let color = ''
 
           if ('application/zip' === file.type) {
             const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
@@ -119,23 +126,15 @@ const Component = (props: Props) => {
             "features": []
           } as GeoJSON.FeatureCollection
 
-          try {
-            geojson.features = JSON.parse(data).features
-          } catch(e) {
-            const _geojson = xml2geojson(data)
-            if (_geojson.geojson) {
-              geojson.features = _geojson.geojson.features
-            }
-            if (_geojson.projection) {
-              projection = _geojson.projection
-            }
-            if (_geojson.name) {
-              name = _geojson.name
-            }
-
-            count =  _geojson.count
-            color = _geojson.color || ''
+          const _geojson = xml2geojson(data)
+          if (_geojson.geojson) {
+            geojson.features = _geojson.geojson.features
           }
+
+          const projection = _geojson.projection || ''
+          const name = _geojson.name || ''
+          const count =  _geojson.count || 0
+          const color = _geojson.color || ''
 
           props.dataCallback({
             name: name,
@@ -147,14 +146,11 @@ const Component = (props: Props) => {
           })
 
           if ('任意座標系' !== projection) {
-            setTimeout(() => {
-              resolve(geojson)
-            }, 500 * acceptedFiles.length)
-
             if (! props.map.getSource(id)) {
               const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map)
               simpleStyle.updateData(geojson)
             }
+            resolve(geojson)
           } else {
             resolve({
               "type": "FeatureCollection",
@@ -162,8 +158,6 @@ const Component = (props: Props) => {
             })
           }
         }
-
-        reader.readAsText(file)
       }) // end Promise()
 
       promises.push(promise)
@@ -216,7 +210,8 @@ const Component = (props: Props) => {
     isDragReject
   } = useDropzone({ accept: {
     'application/zip': ['.zip'],
-    'text/plain': ['.xml'],
+    'application/xml': ['.xml'],
+    'text/xml': ['.xml'],
   }, onDrop, maxFiles: maxFiles, });
 
   const style = React.useMemo(() => ({
