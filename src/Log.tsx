@@ -43,7 +43,7 @@ const Component = (props: Props) => {
   return (
     <div className={props.className}>
       <table className="log-table">
-        <thead><tr><th>地図名</th><th>ファイル名</th><th>データ数</th><th>座標系</th><th>GeoJSON</th></tr></thead>
+        <thead><tr><th>地図名</th><th>ファイル名</th><th>筆数</th><th>座標系</th><th>GeoJSON</th></tr></thead>
         <tbody>
           {props.geojsons.map(function(item, i){
             let link = <></>

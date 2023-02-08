@@ -73,7 +73,7 @@ export const xml2geojson = (xml: string): XMLData => {
     }
 
     if (feature.properties) {
-      feature.properties.title = `${feature.properties['大字名']}${feature.properties['地番']}`
+      feature.properties.title = `${feature.properties['大字名'] || ''}${feature.properties['地番'] || ''}`
       feature.properties.fill = `rgba(${r}, ${g}, ${b}, 0.6)`
       feature.properties.stroke = `#FFFFFF`
     }
