@@ -150,13 +150,9 @@ const Component = (props: Props) => {
               const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map)
               simpleStyle.updateData(geojson)
             }
-            resolve(geojson)
-          } else {
-            resolve({
-              "type": "FeatureCollection",
-              "features": []
-            })
           }
+
+          resolve(geojson)
         }
       }) // end Promise()
 
