@@ -58,7 +58,6 @@ interface Props {
   className: string;
   map: any;
   dataCallback: Function;
-  setid: Function;
 }
 
 const Component = (props: Props) => {
@@ -137,17 +136,20 @@ const Component = (props: Props) => {
           const count =  _geojson.count || 0
           const color = _geojson.color || ''
 
-          props.dataCallback({
-            name: name,
-            filename: filename,
-            projection: projection,
-            count: count,
-            geojson: geojson,
-            color: color,
-            resolve: resolve,
+          await props.dataCallback(() => {
+            return {
+              id: id,
+              data: {
+                name: name,
+                filename: filename,
+                projection: projection,
+                count: count,
+                geojson: geojson,
+                color: color,
+              },
+              resolve: resolve,
+            }
           })
-
-          props.setid(id)
 
           if ('任意座標系' !== projection) {
             if (! props.map.getSource(id)) {
@@ -155,8 +157,6 @@ const Component = (props: Props) => {
               simpleStyle.updateData(geojson)
             }
           }
-
-          resolve(geojson)
         }
       }) // end Promise()
 
