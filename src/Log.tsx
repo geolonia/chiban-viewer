@@ -61,7 +61,7 @@ const Component = (props: Props) => {
             return <tr key={i} onMouseEnter={mouseenter} onMouseLeave={mouseleave} onClick={click} style={style}>
                 <td><span style={{ color: item.color || '#333333' }}>■</span> {item.name}</td>
                 <td>{item.filename}</td>
-                <td>{item.count}</td>
+                <td>{Number(item.count).toLocaleString('en-US')}</td>
                 <td>{item.projection}</td>
                 <td>{link}</td>
               </tr>;
