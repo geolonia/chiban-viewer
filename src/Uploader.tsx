@@ -109,8 +109,10 @@ const Component = (props: Props) => {
         reader.onload = async () => {
           let data = ''
           let filename = ''
-
-          if ('application/zip' === file.type) {
+          if (
+            'application/zip' === file.type ||
+            'application/x-zip-compressed' === file.type
+          ) {
             const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
             if (entry) {
               data = await entry.getData(new TextWriter())
