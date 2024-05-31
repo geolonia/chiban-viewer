@@ -8,6 +8,10 @@ import { BlobReader, TextWriter, ZipReader } from "@zip.js/zip.js";
 import geojsonExtent from '@mapbox/geojson-extent';
 
 import { xml2geojson } from "./lib/xml2geojson"
+import { useAtomValue, useSetAtom } from 'jotai';
+import { addParsedXMLDataAtom, loadingAtom, mapAtom } from './atoms';
+import { queue as asyncQueue } from 'async';
+import { readFileAsText } from './lib/util';
 
 const maxFiles = 100
 
@@ -56,19 +60,20 @@ const hideUploader = (event: DragEvent) => {
 
 interface Props {
   className: string;
-  map: any;
-  dataCallback: Function;
 }
 
 const Component = (props: Props) => {
+  const setLoading = useSetAtom(loadingAtom);
+  const map = useAtomValue(mapAtom);
+  const addParsedXMLData = useSetAtom(addParsedXMLDataAtom);
 
   React.useEffect(() => {
     window.addEventListener('dragenter', showUploader)
     window.addEventListener('dragleave', hideUploader)
   })
 
-  const onDrop = React.useCallback((acceptedFiles : any) => {
-    if (! props.map) {
+  const onDrop = React.useCallback(async (acceptedFiles : File[]) => {
+    if (!map) {
       return
     }
 
@@ -79,130 +84,83 @@ const Component = (props: Props) => {
     const uploader = document.querySelector('.uploader') as HTMLElement
     uploader.style.display = "none"
 
-    const loading = document.querySelector('.loading') as HTMLElement
-    loading.style.display = "block"
+    setLoading(true);
+    let allFeatures: GeoJSON.Feature[] = [];
+    const queue = asyncQueue<File>(async (file) => {
+      const id = file.name.replace(/\..+?$/, '')
 
-    const promises = []
+      if (map.getSource(id)) { // 重複のためスキップ
+        return
+      }
 
-    for (let i = 0; i < acceptedFiles.length; i++) {
-      /* eslint-disable no-loop-func */
-      const promise = new Promise((resolve, reject) => {
-        const file = acceptedFiles[i]
-
-        const id = file.name.replace(/\..+?$/, '')
-
-        if (props.map.getSource(id)) { // 重複のためスキップ
-          resolve({
-            "type": "FeatureCollection",
-            "features": []
-          })
-
-          return
+      let data = ''
+      let filename = ''
+      if (
+        'application/zip' === file.type ||
+        'application/x-zip-compressed' === file.type
+      ) {
+        const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
+        if (entry) {
+          data = await entry.getData(new TextWriter())
+          filename = entry.filename
         }
+      } else {
+        data = await readFileAsText(file)
+        filename = file.name
+      }
 
-        const reader = new FileReader()
-        reader.readAsText(file)
-
-        reader.onabort = () => () => {}
-        reader.onerror = () => console.log('file reading has failed')
-
-        reader.onload = async () => {
-          let data = ''
-          let filename = ''
-          if (
-            'application/zip' === file.type ||
-            'application/x-zip-compressed' === file.type
-          ) {
-            const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
-            if (entry) {
-              data = await entry.getData(new TextWriter())
-              filename = entry.filename
-            }
-          } else {
-            data = reader.result as string
-            filename = file.name
-          }
-
-          const geojson = {
-            "type": "FeatureCollection",
-            "features": []
-          } as GeoJSON.FeatureCollection
-
-          const _geojson = xml2geojson(data)
-          if (_geojson.geojson) {
-            geojson.features = _geojson.geojson.features
-          }
-
-          const projection = _geojson.projection || ''
-          const name = _geojson.name || ''
-          const count =  _geojson.count || 0
-          const color = _geojson.color || ''
-
-          await props.dataCallback(() => {
-            return {
-              id: id,
-              data: {
-                name: name,
-                filename: filename,
-                projection: projection,
-                count: count,
-                geojson: geojson,
-                color: color,
-              },
-              resolve: resolve,
-            }
-          })
-
-          if ('任意座標系' !== projection) {
-            if (! props.map.getSource(id)) {
-              const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(props.map)
-              simpleStyle.updateData(geojson)
-            }
-          }
-        }
-      }) // end Promise()
-
-      promises.push(promise)
-    }
-
-    Promise.all(promises).then((res) => {
-      const data = res.reverse()
-      let merged = {
+      const geojson = {
         "type": "FeatureCollection",
         "features": []
-      } as GeoJSON.FeatureCollection
-      let features = [] as any
+      } as GeoJSON.FeatureCollection;
 
-      for (let i = 0; i < data.length; i++) {
-        const geojson = data[i] as GeoJSON.FeatureCollection
-        if (! geojson.features.length) {
-          continue;
+      const _geojson = xml2geojson(data)
+      if (_geojson.geojson) {
+        geojson.features = _geojson.geojson.features
+      }
+      allFeatures = allFeatures.concat(geojson.features);
+
+      const projection = _geojson.projection || ''
+      const name = _geojson.name || ''
+      const count =  _geojson.count || 0
+      const color = _geojson.color || ''
+
+      addParsedXMLData({
+        id: id,
+        data: {
+          name: name,
+          filename: filename,
+          projection: projection,
+          count: count,
+          geojson: geojson,
+          color: color,
         }
-
-        features = features.concat(geojson.features)
+      });
+      if ('任意座標系' !== projection) {
+        if (!map.getSource(id)) {
+          const simpleStyle = new window.geolonia.simpleStyle(geojson, {id: id}).addTo(map)
+          simpleStyle.updateData(geojson)
+        }
       }
+    }, 4);
+    queue.push(acceptedFiles);
+    await queue.drain();
 
-      merged.features = features
+    const options = {
+      duration: 3000,
+      padding: 30,
+    };
 
-      const options = {
-        duration: 3000,
-        padding: 30,
-      };
+    const bounds = geojsonExtent({type: "FeatureCollection", features: allFeatures});
 
-      const bounds = geojsonExtent(merged);
+    if (bounds) {
+      window.requestAnimationFrame(() => {
+        map.fitBounds(bounds, options);
+      });
+    }
 
-      if (bounds) {
-        window.requestAnimationFrame(() => {
-          props.map.fitBounds(bounds, options);
-        });
-      }
-
-      loading.style.display = "none"
-    }).catch(() => {
-      // nothing todo
-    })
-
-  }, [props])
+    setLoading(false);
+  }, [map, addParsedXMLData, setLoading])
 
   const {
     getRootProps,

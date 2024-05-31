@@ -55,7 +55,10 @@ html, body, #root, .map, .main, .uploader
   left: 0;
   right: 0;
   color: #FFFFFF;
-  display: none;
+
+  &.done {
+    display: none;
+  }
 
   p
   {

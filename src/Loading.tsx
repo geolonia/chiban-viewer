@@ -1,17 +1,14 @@
 import React from 'react'
+import classNames from 'classnames';
+import { useAtomValue } from 'jotai';
+import { loadingAtom } from './atoms';
 
-interface Props {
-  className: string;
-}
-
-const Component = (props: Props) => {
-
-  const style = {
-  }
+const Component: React.FC = () => {
+  const loading = useAtomValue(loadingAtom);
 
   return (
-    <div className={props.className}>
-      <div style={style}>
+    <div className={classNames('loading', { 'done': !loading } )}>
+      <div>
         <div>
           <p>地図 XML をロードしています ...</p>
         </div>

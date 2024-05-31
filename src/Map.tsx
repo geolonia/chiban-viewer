@@ -1,4 +1,6 @@
+import { useSetAtom } from 'jotai';
 import React from 'react';
+import { mapAtom } from './atoms';
 
 declare global {
   interface Window {
@@ -8,10 +10,10 @@ declare global {
 
 interface Props {
     className: string;
-    setmap: Function;
 }
 
 const Component = (props: Props) => {
+  const setMap = useSetAtom(mapAtom);
   const mapContainer = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
@@ -22,9 +24,9 @@ const Component = (props: Props) => {
     })
 
     map.on("load", () => {
-      props.setmap(map)
+      setMap(map);
     })
-  }, [mapContainer, props])
+  }, [mapContainer, setMap])
 
   return (
     <>
