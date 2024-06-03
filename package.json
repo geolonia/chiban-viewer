@@ -17,7 +17,7 @@
     "@types/node": "^16.11.56",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
-    "@zip.js/zip.js": "^2.6.62",
+    "@zip.js/zip.js": "^2.7.45",
     "async": "^3.2.5",
     "classnames": "^2.5.1",
     "jotai": "^2.8.2",

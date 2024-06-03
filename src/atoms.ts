@@ -1,8 +1,8 @@
 import { atom } from 'jotai';
 
-export interface ParsedXMLData {
+export type ParsedXMLData = {
   id: string;
-  data: {
+  data?: {
     name: string,
     filename: string,
     projection: string,
@@ -10,7 +10,8 @@ export interface ParsedXMLData {
     geojson: GeoJSON.FeatureCollection,
     color: string,
   };
-}
+  error?: string;
+};
 
 export const loadingAtom = atom(false);
 export const mapAtom = atom<any>(null);

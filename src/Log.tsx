@@ -22,12 +22,14 @@ const Component = (props: Props) => {
 
   const click = React.useCallback((event: React.MouseEvent<HTMLTableRowElement>) => {
     const key = Number(event.currentTarget.sectionRowIndex)
+    const parsed = geojsons[key];
+    if (!parsed.data) return;
 
-    if ('任意座標系' === geojsons[key].data.projection) {
+    if ('任意座標系' === parsed.data.projection) {
       return
     }
 
-    const geojson = geojsons[key].data.geojson
+    const geojson = parsed.data.geojson
 
     const options = {
       duration: 3000,
@@ -49,6 +51,16 @@ const Component = (props: Props) => {
         <thead><tr><th>地図名</th><th>ファイル名</th><th>筆数</th><th>座標系</th><th>GeoJSON</th></tr></thead>
         <tbody>
           {geojsons.map(function(item, i){
+            if (!item.data && item.error) return (<tr
+              key={item.id}
+            >
+              <td>{item.id}</td>
+              <td>エラー: {item.error}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>);
+            if (!item.data) return null;
             let link = <></>
             let style = {color: '#999999'}
 

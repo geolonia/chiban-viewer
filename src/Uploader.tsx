@@ -87,6 +87,10 @@ const Component = (props: Props) => {
     setLoading(true);
     let allFeatures: GeoJSON.Feature[] = [];
     const queue = asyncQueue<File>(async (file) => {
+      if (file.size === 0) {
+        throw new Error(`ファイルが検知できませんでした。圧縮ディレクトリからアップロードした場合、一度圧縮を解凍してからファイルを再選択してください。`);
+      }
+
       const id = file.name.replace(/\..+?$/, '')
 
       if (map.getSource(id)) { // 重複のためスキップ
@@ -99,8 +103,10 @@ const Component = (props: Props) => {
         'application/zip' === file.type ||
         'application/x-zip-compressed' === file.type
       ) {
-        const entry = (await (new ZipReader(new BlobReader(file))).getEntries({})).shift();
-        if (entry) {
+        const blobReader = new BlobReader(file);
+        const zipReader = new ZipReader(blobReader);
+        const entry = (await zipReader.getEntries({})).shift();
+        if (entry && entry.getData) {
           data = await entry.getData(new TextWriter())
           filename = entry.filename
         }
@@ -143,6 +149,14 @@ const Component = (props: Props) => {
         }
       }
     }, 4);
+    queue.error((err, file) => {
+      const id = file.name.replace(/\..+?$/, '');
+      addParsedXMLData({
+        id,
+        error: err.message,
+      })
+      console.error(err);
+    });
     queue.push(acceptedFiles);
     await queue.drain();
 
