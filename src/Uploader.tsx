@@ -106,7 +106,7 @@ const Component = (props: Props) => {
         const blobReader = new BlobReader(file);
         const zipReader = new ZipReader(blobReader);
         const entry = (await zipReader.getEntries({})).shift();
-        if (entry && entry.getData) {
+        if (entry && "getData" in entry) {
           data = await entry.getData(new TextWriter())
           filename = entry.filename
         }
