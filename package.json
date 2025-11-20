@@ -10,7 +10,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.0",
     "@mapbox/geojson-extent": "^1.0.1",
-    "@zip.js/zip.js": "^2.7.45",
+    "@zip.js/zip.js": "^2.8.10",
     "async": "^3.2.5",
     "classnames": "^2.5.1",
     "jotai": "^2.8.2",
