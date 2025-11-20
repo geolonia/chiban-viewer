@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Map from './Map'
 import Uploader from './Uploader'
 import Loading from './Loading'

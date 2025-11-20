@@ -22,7 +22,7 @@ const JP_ZONES = [
   "+proj=tmerc +lat_0=26 +lon_0=154 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs", // EPSG:2461 / 19系
 ];
 
-export const JP_ZONE_TO_EPSG_MAP = {};
+export const JP_ZONE_TO_EPSG_MAP: Record<string, string> = {};
 
 for (const [i, zone] of JP_ZONES.entries()) {
   const zoneId = 2443 + i;
